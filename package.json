@@ -1,0 +1,11 @@
+{
+  "name": "Faceit-Cup-Bot",
+  "version": "1.0.0",
+  "description": "Asks for cups",
+  "main": "bot.js",
+  "author": "rush2sk8",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "discord.js": "^11.5.1"
+  }
+}
