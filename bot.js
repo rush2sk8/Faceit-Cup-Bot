@@ -21,13 +21,7 @@ bot.on('message', (message) => {
     //view all of the messages and look for a twitch clip link
     if (channelName == CUP_CHANNEL || channelName == CUP_CHANNEL2) {
         if (content == "!cup") {
-
-            const embed = new Discord.RichEmbed()
-                .setTitle("Cup Announcement")
-                .setColor("#ffbb00")
-                .setDescription("<@&" + CUP_ROLE + "> Please react to this if you want to play in the cup.")
-                .setThumbnail("https://res-3.cloudinary.com/crunchbase-production/image/upload/xtrxobrlttwixe1kfzo5")
-            message.channel.send(embed).then((m) => { m.react(REACTION_EMOJI) })
+            message.channel.send("<@&" + CUP_ROLE + "> Please react to this if you want to play in the cup.").then((m) => { m.react(REACTION_EMOJI) })
         }
     }
 })
