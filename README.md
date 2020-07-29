@@ -3,8 +3,6 @@ Discord bot to ask people to play in a faceit cup
 
 ## Installation
 
-You need to have postgresql up and running 
-
 `npm install`
 
 ## Necessary files
