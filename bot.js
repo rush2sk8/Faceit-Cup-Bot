@@ -23,7 +23,7 @@ bot.on('message', (message) => {
     const content = message.content
 
     //view all of the messages and look for a twitch clip link
-    if (channelName == CUP_CHANNEL || channelName == CUP_CHANNEL2) {
+    if (channelName == CUP_CHANNEL) {
         if (content.startsWith("!cup")) {
             if (Date.now() - time >= 300000 || firstRun) {
                 message.channel.send("<@&" + CUP_ROLE + "> Please react to this if you want to play in the cup.").then((m) => {
