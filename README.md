@@ -11,7 +11,6 @@ Discord bot to ask people to play in a faceit cup
   - `DISCORD_TOKEN` Discord api token
   - `CUP_ROLE` Discord cup role id
   - `CUP_CHANNEL` Channel to look in
-  - `CUP_CHANNEL2` Secondary channel to look in 
   - `REACTION_EMOJI` Unicode emoji to react with
   
 ## Launching the bot
