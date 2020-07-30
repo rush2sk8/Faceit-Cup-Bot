@@ -42,14 +42,14 @@ bot.on('message', (message) => {
 bot.on('messageReactionAdd', (reaction, user) => {
     if (messages.includes(reaction.message.id)) {
         if (reaction.emoji.name != REACTION_EMOJI) reaction.remove(user)
-        if (reaction.emoji.name == REACTION_EMOJI && reaction.count > 6) {
+        if (reaction.emoji.name == REACTION_EMOJI && reaction.count > 2) {
             reaction.remove(user)
             return
         }
 
-        if (reaction.count == 6) {
+        if (reaction.count == 2) {
             let message = reaction.message
-            const users = reaction.users.map(u => u.toString()).slice(1).toString()
+            const users = reaction.users.map(u => u.tag.toString().slice(0, -5)).slice(1).toString()
             
             let msgJump = "https://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id
 
