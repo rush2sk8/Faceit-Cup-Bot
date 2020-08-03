@@ -7,6 +7,7 @@ let CUP_CHANNEL = process.env.CUP_CHANNEL
 let CUP_CHANNEL2 = process.env.CUP_CHANNEL2
 let CUP_ROLE = process.env.CUP_ROLE
 let REACTION_EMOJI = process.env.REACTION_EMOJI
+let NUM_PLAYERS = process.env.NUM_PLAYERS
 
 var messages = []
 var time = Date.now()
@@ -42,12 +43,12 @@ bot.on('message', (message) => {
 bot.on('messageReactionAdd', (reaction, user) => {
     if (messages.includes(reaction.message.id)) {
         if (reaction.emoji.name != REACTION_EMOJI) reaction.remove(user)
-        if (reaction.emoji.name == REACTION_EMOJI && reaction.count > 6) {
+        if (reaction.emoji.name == REACTION_EMOJI && reaction.count > NUM_PLAYERS) {
             reaction.remove(user)
             return
         }
 
-        if (reaction.count == 6) {
+        if (reaction.count == NUM_PLAYERS) {
             let message = reaction.message
             const users = reaction.users.map(u => u.tag.toString().slice(0, -5)).slice(1).toString()
             
