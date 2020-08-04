@@ -118,7 +118,7 @@ setInterval(() => {
 setInterval(() => {
 	console.log(activeTeams)
 	for(var key in activeTeams){
-		if(Date.now() - activeTeams[key][0] >= 1000*60*60){
+		if(Date.now() - activeTeams[key][0] >= 1000*60*60*8){
 			delete activeTeams[key]
 		}
 	}
