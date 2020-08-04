@@ -12,7 +12,9 @@ let NUM_PLAYERS = parseInt(process.env.NUM_PLAYERS)
 var messages = []
 var activeTeams = {}
 var time = Date.now()
+var pingTime = Date.now()
 var firstRun = true
+var firstPing = true
 
 bot.on('ready', function(evt) {
     bot.user.setActivity("!!help | rush2sk8", { type: "STREAMING", url: "https://www.twitch.tv/rush2sk8" })
@@ -57,6 +59,7 @@ bot.on('messageReactionAdd', (reaction, user) => {
         }
 
         if (reaction.count == NUM_PLAYERS) {
+
             let message = reaction.message
             const users = reaction.users.map(u => u.tag.toString().slice(0, -5)).slice(1).toString()
 
@@ -88,7 +91,8 @@ bot.on('messageReactionRemove', (reaction, user) => {
 })
 
 function pingTeams(message) {
-	console.log(activeTeams)
+
+    console.log(activeTeams)
     var team_num = 1
     var ping_message = ""
 
@@ -102,11 +106,21 @@ function pingTeams(message) {
         team_num += 1
     }
 
-    if(ping_message == "") {
-    	message.channel.send("`There are no active teams playing.`")
-    }
-    else {
-        message.channel.send(ping_message)
+    if (ping_message == "") {
+        message.channel.send("`There are no active teams playing.`")
+    } else {
+        if ((Date.now() - pingTime) >= 30000 || firstPing) {
+            message.channel.send(ping_message)
+            pingTime = Date.now()
+            firstPing = false
+        } else {
+        	if(message.author.id == 131876531223003138){
+        		message.author.send("`YOOOO AAYUSH CHILLL BRO. Please wait " + ((30000 - (Date.now() - pingTime)) / 1000).toFixed(2) + " seconds before using !ping again.``")
+        	} 
+        	else {
+        		message.author.send("`Please wait " + ((30000 - (Date.now() - pingTime)) / 1000).toFixed(2) + " seconds before using !ping again.`")
+        	}
+        }
     }
 }
 
@@ -116,11 +130,10 @@ setInterval(() => {
 
 //kill a team 1 hour after its creation. check every 30 seconds
 setInterval(() => {
-	console.log(activeTeams)
-	for(var key in activeTeams){
-		if(Date.now() - activeTeams[key][0] >= 1000*60*60*8){
-			delete activeTeams[key]
-		}
-	}
-
-}, 1000*30)
+    console.log(activeTeams)
+    for (var key in activeTeams) {
+        if (Date.now() - activeTeams[key][0] >= 1000 * 60 * 60 * 8) {
+            delete activeTeams[key]
+        }
+    }
+}, 1000 * 30)
