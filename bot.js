@@ -4,7 +4,6 @@ const bot = new Discord.Client()
 bot.login(process.env.DISCORD_TOKEN)
 
 let CUP_CHANNEL = process.env.CUP_CHANNEL
-let CUP_CHANNEL2 = process.env.CUP_CHANNEL2
 let CUP_ROLE = process.env.CUP_ROLE
 let REACTION_EMOJI = process.env.REACTION_EMOJI
 let NUM_PLAYERS = parseInt(process.env.NUM_PLAYERS)
@@ -30,7 +29,7 @@ bot.on('message', (message) => {
     //view all of the messages and look for a twitch clip link
     if (channelName == CUP_CHANNEL) {
         if (content.startsWith("!cup")) {
-            if (Date.now() - time >= 300000 || firstRun) {
+            if (firstRun) {
                 message.channel.send("<@&" + CUP_ROLE + "> Please react to this if you want to play in the cup.").then((m) => {
                     m.react(REACTION_EMOJI)
                     messages.push(m.id)
@@ -38,7 +37,7 @@ bot.on('message', (message) => {
                     firstRun = false
                 })
             } else {
-                message.channel.send("**Please wait " + ((300000 - (Date.now() - time)) / 60000.0).toFixed(2) + " mins before starting a new cup**")
+                message.channel.send("`There is already a unfilled cup running`")
             }
         } else if (content == "!!help") {
             message.channel.send("```!cup - Will start a cup \n!ping - Will ping all active teams. A team is active for 1 hour from creation```")
@@ -87,6 +86,7 @@ bot.on('messageReactionRemove', (reaction, user) => {
 
     if (message.id in activeTeams) {
         delete activeTeams[message.id]
+        firstRun = false
     }
 })
 
