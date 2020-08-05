@@ -121,6 +121,7 @@ function pingTeams(message) {
         		message.author.send("`Please wait " + ((30000 - (Date.now() - pingTime)) / 1000).toFixed(2) + " seconds before using !ping again.`")
         	}
         }
+        message.delete()
     }
 }
 
