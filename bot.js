@@ -109,13 +109,13 @@ function pingTeams(message) {
     if (ping_message == "") {
         message.channel.send("`There are no active teams playing.`")
     } else {
-        if ((Date.now() - pingTime) >= 30000 || firstPing) {
+        if ((Date.now() - pingTime) >= 30000 || firstPing || message.author.id == 142457707289378816) {
             message.channel.send(ping_message)
             pingTime = Date.now()
             firstPing = false
         } else {
         	if(message.author.id == 131876531223003138){
-        		message.author.send("`YOOOO AAYUSH CHILLL BRO. Please wait " + ((30000 - (Date.now() - pingTime)) / 1000).toFixed(2) + " seconds before using !ping again.``")
+        		message.author.send("`YOOOO AAYUSH CHILLL BRO. Please wait " + ((30000 - (Date.now() - pingTime)) / 1000).toFixed(2) + " seconds before using !ping again.`")
         	} 
         	else {
         		message.author.send("`Please wait " + ((30000 - (Date.now() - pingTime)) / 1000).toFixed(2) + " seconds before using !ping again.`")
