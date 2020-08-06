@@ -1,4 +1,3 @@
-require('dotenv').config()
 var Discord = require('discord.js')
 const bot = new Discord.Client()
 bot.login(process.env.DISCORD_TOKEN)
@@ -17,6 +16,10 @@ var firstPing = true
 
 bot.on('ready', function(evt) {
     bot.user.setActivity("!!help | rush2sk8", { type: "STREAMING", url: "https://www.twitch.tv/rush2sk8" })
+    console.log(CUP_CHANNEL)
+    console.log(CUP_ROLE)
+    console.log(REACTION_EMOJI)
+    console.log(NUM_PLAYERS)
 })
 
 bot.on('message', (message) => {
