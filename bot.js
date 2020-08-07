@@ -29,7 +29,7 @@ bot.on('message', (message) => {
     //view all of the messages and look for a twitch clip link
     if (channelName == CUP_CHANNEL) {
         if (content.startsWith("!cup")) {
-            if (firstRun) {
+             if ((Date.now() - time > 1800000 ) || firstRun) {
                 message.channel.send("<@&" + CUP_ROLE + "> Please react to this if you want to play in the cup.").then((m) => {
                     m.react(REACTION_EMOJI)
                     messages.push(m.id)
@@ -37,7 +37,7 @@ bot.on('message', (message) => {
                     firstRun = false
                 })
             } else {
-                message.channel.send("`There is already a unfilled cup running`")
+                message.channel.send("**Please wait " + ((1800000  - (Date.now() - time)) / 60000.0).toFixed(2) + " mins before starting a new cup**")
             }
         } else if (content == "!!help") {
             message.channel.send("```!cup - Will start a cup \n!ping - Will ping all active teams. A team is active for 1 hour from creation```")
