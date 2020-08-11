@@ -29,7 +29,7 @@ bot.on('message', (message) => {
     //view all of the messages and look for a twitch clip link
     if (channelName == CUP_CHANNEL) {
         if (content.startsWith("!cup")) {
-             if ((Date.now() - time > 1800000 ) || firstRun) {
+            if ((Date.now() - time > 1800000) || firstRun) {
                 message.channel.send("<@&" + CUP_ROLE + "> Please react to this if you want to play in the cup.").then((m) => {
                     m.react(REACTION_EMOJI)
                     messages.push(m.id)
@@ -37,12 +37,26 @@ bot.on('message', (message) => {
                     firstRun = false
                 })
             } else {
-                message.channel.send("**Please wait " + ((1800000  - (Date.now() - time)) / 60000.0).toFixed(2) + " mins before starting a new cup**")
+                message.channel.send("**Please wait " + ((1800000 - (Date.now() - time)) / 60000.0).toFixed(2) + " mins before starting a new cup**")
             }
         } else if (content == "!!help") {
             message.channel.send("```!cup - Will start a cup \n!ping - Will ping all active teams. A team is active for 1 hour from creation```")
-        } else if (content == "!ping") {
-            pingTeams(message)
+        } else if (content.startsWith("!ping")) {
+            const split = content.split(" ")
+
+            var n = Object.keys(activeTeams).length
+
+            if (n == 0) {
+                message.channel.send("`There are no active teams playing`")
+            } else if (split.length != 2) {
+                message.author.send("Usage `!ping <team_number>`")
+                message.delete()
+            } else {
+                pingTeams(message, split)
+            }
+
+        } else if (content == "!teams") {
+            listTeams(message)
         }
     }
 })
@@ -72,7 +86,7 @@ bot.on('messageReactionAdd', (reaction, user) => {
                 .setTimestamp()
             message.channel.send(embed)
 
-            activeTeams[message.id] = [Date.now(), reaction.users.map(u => u.id).slice(1)]
+            activeTeams[message.id] = [Date.now(), reaction.users.map(u => u).slice(1)]
 
             firstRun = true
         }
@@ -90,37 +104,67 @@ bot.on('messageReactionRemove', (reaction, user) => {
     }
 })
 
-function pingTeams(message) {
-
+function listTeams(message) {
     console.log(activeTeams)
     var team_num = 1
-    var ping_message = ""
+    var ping_message = "```\n"
 
     for (var key in activeTeams) {
         ping_message += "Team " + team_num + "\n"
 
         for (var i = 0; i < activeTeams[key][1].length; i++) {
-            ping_message += "<@" + activeTeams[key][1][i] + ">\n"
+            const user = activeTeams[key][1][i]
+            ping_message += user.tag.slice(0, -5) + "\n"
         }
 
         team_num += 1
     }
+    ping_message += "\n```"
 
-    if (ping_message == "") {
+    if (ping_message == "```\n\n```") {
         message.channel.send("`There are no active teams playing.`")
     } else {
+        message.channel.send(ping_message)
+    }
+    message.delete()
+}
+
+function pingTeams(message, split) {
+ 
+    var n = Object.keys(activeTeams).length
+
+    try {
+        const team = parseInt(split[1])
+  
+        if (isNaN(team) || team <= 0 || team > n) {
+            message.author.send("Not a vaild team number\nUsage `!ping <team_number>`")
+            message.delete()
+            return
+        } 
+        var ping_message = ""
+
+        var key = Object.keys(activeTeams)[team-1]
+        ping_message += "Team " + team + "\n"
+ 
+        for (var i = 0; i < activeTeams[key][1].length; i++) {
+            ping_message += activeTeams[key][1][i] + "\n"
+        }
+
         if ((Date.now() - pingTime) >= 30000 || firstPing || message.author.id == 142457707289378816) {
             message.channel.send(ping_message)
             pingTime = Date.now()
             firstPing = false
         } else {
-        	if(message.author.id == 131876531223003138){
-        		message.author.send("`YOOOO AAYUSH CHILLL BRO. Please wait " + ((30000 - (Date.now() - pingTime)) / 1000).toFixed(2) + " seconds before using !ping again.`")
-        	} 
-        	else {
-        		message.author.send("`Please wait " + ((30000 - (Date.now() - pingTime)) / 1000).toFixed(2) + " seconds before using !ping again.`")
-        	}
+            if (message.author.id == 131876531223003138) {
+                message.author.send("`YOOOO AAYUSH CHILLL BRO. Please wait " + ((30000 - (Date.now() - pingTime)) / 1000).toFixed(2) + " seconds before using !ping again.`")
+            } else {
+                message.author.send("`Please wait " + ((30000 - (Date.now() - pingTime)) / 1000).toFixed(2) + " seconds before using !ping again.`")
+            }
         }
+        message.delete()
+
+    } catch (err) {
+        message.author.send("Not a vaild team number\nUsage `!ping <teams_number>`")
         message.delete()
     }
 }
