@@ -16,7 +16,7 @@ var firstRun = true
 var firstPing = true
 
 bot.on('ready', function(evt) {
-    bot.user.setActivity("!!help | rush2sk8", { type: "STREAMING", url: "https://www.twitch.tv/rush2sk8" })
+    bot.user.setActivity("!!help | by rush2sk8", { type: "STREAMING", url: "https://www.twitch.tv/rush2sk8" })
 })
 
 bot.on('message', (message) => {
@@ -41,7 +41,7 @@ bot.on('message', (message) => {
             }
         } else if (content == "!!help") {
             message.channel.send("```!cup - Will start a cup \n!ping - Will ping all active teams. A team is active for 1 hour from creation```")
-        } else if (content.startsWith("!ping")) {
+        } else if (content.startsWith("!ping") || content.startsWith("!cancel")) {
             const split = content.split(" ")
 
             var n = Object.keys(activeTeams).length
@@ -52,7 +52,13 @@ bot.on('message', (message) => {
                 message.author.send("Usage `!ping <team_number>`")
                 message.delete()
             } else {
-                pingTeams(message, split)
+
+                if (content.startsWith("!ping")) {
+                    pingTeams(message, split, false)
+                } else if (content.startsWith("!cancel") && message.author.id == 142457707289378816) {
+                	pingTeams(message, split, true)
+                }
+
             }
 
         } else if (content == "!teams") {
@@ -129,23 +135,31 @@ function listTeams(message) {
     message.delete()
 }
 
-function pingTeams(message, split) {
- 
+function pingTeams(message, split, cancel) {
+
     var n = Object.keys(activeTeams).length
 
     try {
         const team = parseInt(split[1])
-  
+
         if (isNaN(team) || team <= 0 || team > n) {
             message.author.send("Not a vaild team number\nUsage `!ping <team_number>`")
             message.delete()
             return
-        } 
+        }
         var ping_message = ""
 
-        var key = Object.keys(activeTeams)[team-1]
+        var key = Object.keys(activeTeams)[team - 1]
+
+
+        if(cancel) {
+        	delete activeTeams[key]
+        	message.channel.send("Cancelled Team: " + team)
+        	return
+        }
+
         ping_message += "Team " + team + "\n"
- 
+
         for (var i = 0; i < activeTeams[key][1].length; i++) {
             ping_message += activeTeams[key][1][i] + "\n"
         }
@@ -169,15 +183,11 @@ function pingTeams(message, split) {
     }
 }
 
-setInterval(() => {
-    messages.shift()
-}, 21600000)
 
 //kill a team 1 hour after its creation. check every 30 seconds
 setInterval(() => {
-    console.log(activeTeams)
     for (var key in activeTeams) {
-        if (Date.now() - activeTeams[key][0] >= 1000 * 60 * 60 * 8) {
+        if (Date.now() - activeTeams[key][0] >= 1000 * 60 * 60 * 12) {
             delete activeTeams[key]
         }
     }
