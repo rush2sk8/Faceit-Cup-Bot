@@ -1,6 +1,6 @@
 require('dotenv').config()
 var Discord = require('discord.js')
-const bot = new Discord.Client()
+const bot = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] })
 bot.login(process.env.DISCORD_TOKEN)
 
 let CUP_CHANNEL = process.env.CUP_CHANNEL
@@ -56,19 +56,37 @@ bot.on('message', (message) => {
                 if (content.startsWith("!ping")) {
                     pingTeams(message, split, false)
                 } else if (content.startsWith("!cancel") && message.author.id == 142457707289378816) {
-                	pingTeams(message, split, true)
+                    pingTeams(message, split, true)
                 }
 
             }
 
         } else if (content == "!teams") {
             listTeams(message)
+        } else if (content.startsWith("!cache") && message.author.id == 142457707289378816) {
+
+            message.channel.fetchMessage(content.split(" ")[1]).then(m => {
+                console.log(m.reactions)
+            })
         }
     }
 })
 
-bot.on('messageReactionAdd', (reaction, user) => {
+bot.on('messageReactionAdd', async (reaction, user) => {
     if (!user || user.bot || !reaction.message.channel.guild) return;
+
+    if (reaction.partial) {
+        // If the message this reaction belongs to was removed the fetching might result in an API error, which we need to handle
+        try {
+            await reaction.fetch();
+            return
+        } catch (error) {
+            console.log('Something went wrong when fetching the message: ', error);
+            // Return as `reaction.message.author` may be undefined/null
+            return;
+        }
+    }
+
 
     if (messages.includes(reaction.message.id)) {
         if (reaction.emoji.name != REACTION_EMOJI) reaction.remove(user)
@@ -147,15 +165,15 @@ function pingTeams(message, split, cancel) {
             message.delete()
             return
         }
+
         var ping_message = ""
 
         var key = Object.keys(activeTeams)[team - 1]
 
-
-        if(cancel) {
-        	delete activeTeams[key]
-        	message.channel.send("Cancelled Team: " + team)
-        	return
+        if (cancel) {
+            delete activeTeams[key]
+            message.channel.send("Cancelled Team: " + team)
+            return
         }
 
         ping_message += "Team " + team + "\n"
